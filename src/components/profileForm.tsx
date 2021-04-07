@@ -3,8 +3,6 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { useForm } from "react-hook-form";
-import { supabaseClient } from "../api/supabaseClient";
-import { AuthSession } from "@supabase/supabase-js";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -17,11 +15,13 @@ const useStyles = makeStyles((theme) => ({
 
 export type ProfileFormProps = {
   onSubmit: (e: { username: string; website: string }) => void;
-  username: string
-  website: string
+  isSubmitting: boolean
+  username?: string
+  website?: string
+  usernameExists: boolean
 }
 
-export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
+export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSubmitting, username, website, usernameExists, children }) => {
   const classes = useStyles();
   const { register, handleSubmit, errors } = useForm();
 
@@ -37,12 +37,14 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
               message: "your username must be longer than 2 letters",
             },
           })}
-          error={errors.username}
-          helperText={errors?.username?.message}
+          error={errors.username || usernameExists}
+          helperText={errors?.username?.message || (usernameExists && "The username already exists")}
           label="Username"
           type="text"
           autoComplete="username"
           variant="outlined"
+          defaultValue={username}
+          disabled={isSubmitting}
         />
       </div>
       <div>
@@ -53,10 +55,19 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit }) => {
           type="website"
           autoComplete="website"
           variant="outlined"
+          defaultValue={website}
+          disabled={isSubmitting}
         />
       </div>
+      <div>
+        {children}
+      </div>
 
-      <Button type="submit" onClick={handleSubmit(onSubmit)}>
+      <Button 
+        type="submit" 
+        onClick={handleSubmit(onSubmit)}
+        disabled={isSubmitting}
+        >
           Submit
       </Button>
     </form>

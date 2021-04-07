@@ -1,9 +1,10 @@
-import React, { useRef } from "react";
+import React from "react";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { useForm } from "react-hook-form";
 import { supabaseClient } from "../api/supabaseClient";
+import { useHistory } from "react-router";
 
 // from https://emailregex.com/
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -21,17 +22,20 @@ export const SignUpPage = () => {
   const classes = useStyles();
   const { register, handleSubmit, watch, errors } = useForm();
   const password = watch("password");
+  const history = useHistory()
 
-  const onSubmit = ({ email, password }: any) => {
-    supabaseClient.auth.signUp({
+  const onSubmit = async ({ email, password }: any) => {
+    const { error } = await supabaseClient.auth.signUp({
       email,
       password,
-    }).then(res => {
-        console.log(res.user)
-        alert("signed up successfully! check your email!")
-    }).catch(err => {
-        console.error(err)
-    });
+    })
+    if(error) {
+      // we should alert the user, maybe a toast message? but we can't do that later.
+      console.log(error)
+      return;
+    }
+
+    history.push("/profile/create")
   };
 
   return (

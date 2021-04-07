@@ -4,6 +4,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { useForm } from "react-hook-form";
 import { supabaseClient } from "../api/supabaseClient";
+import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
+import { WithoutAuth } from "../hocs/withAuth";
 
 // from https://emailregex.com/
 const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
@@ -17,19 +20,31 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const SignInPage = () => {
-  const classes = useStyles();
-  const { register, handleSubmit, watch, errors } = useForm();
 
-  const onSubmit = ({ email, password }: any) => {
-    supabaseClient.auth.signIn({
+const SignInPage = () => {
+  const classes = useStyles();
+  const { register, handleSubmit, errors } = useForm();
+
+  // look for `redirectUri` query, so we can redirect users back to the page they were on
+  const redirectUri = new URLSearchParams(window.location.search).get("redirectUri")
+
+  // we can use `push()` in history to redirect users too
+  const history = useHistory()
+
+  const onSubmit = async ({ email, password }: any) => {
+    // sign the user in
+    const { error } = await supabaseClient.auth.signIn({
       email,
       password,
-    }).then(res => {
-        console.log(res.user)
-    }).catch(err => {
-        console.error(err)
-    });
+    })
+    if(error){
+      // probably should tell the user about the error, but lets implement that later 
+      console.error(error)
+      return
+    }
+
+    // then redirect them to the page they were on, or the root page.
+    history.push(redirectUri || "/")
   };
 
   return (
@@ -67,6 +82,14 @@ export const SignInPage = () => {
       <Button type="submit" onClick={handleSubmit(onSubmit)}>
         Sign In
       </Button>
+
+      <Link to="/signup">
+        <Button>
+          Sign Up
+        </Button>
+      </Link>
     </form>
   );
 };
+
+export default WithoutAuth(SignInPage)

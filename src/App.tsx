@@ -5,10 +5,14 @@ import { SignUpPage } from "./pages/signUpPage";
 import SignInPage from "./pages/signInPage";
 import { supabaseClient } from "./api/supabaseClient";
 import { SignOutPage } from "./pages/signOutPage";
+import { NavBar } from "./component/navBar";
+import { Container } from "@material-ui/core";
 
 function App() {
   return (
     <Router>
+      <NavBar />
+      <Container maxWidth="sm">
       <Switch>
       <Route path="/signup">
           <SignUpPage />
@@ -23,6 +27,7 @@ function App() {
           <HomePage />
         </Route>
       </Switch>
+      </Container>
     </Router>
   );
 }

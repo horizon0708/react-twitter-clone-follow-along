@@ -10,7 +10,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import { AccountCircle } from '@material-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
-import { supabaseClient } from '../api/supabaseClient';
+import { useAuth } from '../contexts/authContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +31,7 @@ export type NavBarProps = {
 
 export const NavBar = ({}) => {
   const classes = useStyles();
-  const session = supabaseClient.auth.session() 
+  const  { session } = useAuth() 
 
   return (
     <div className={classes.root}>

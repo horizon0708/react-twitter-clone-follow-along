@@ -5,9 +5,12 @@ import { SignUpPage } from './pages/signUpPage'
 import SignInPage from './pages/signInPage'
 import { supabaseClient } from './api/supabaseClient'
 import { SignOutPage } from './pages/signOutPage'
-import { NavBar } from './component/navBar'
+import { NavBar } from './components/navBar'
 import { Container } from '@material-ui/core'
 import { AuthProvider } from './contexts/authContext'
+import EditProfilePage from './pages/editProfilePage';
+import { ErrorPage } from './pages/errorPage';
+import { ConfirmEmailPage } from './pages/confirmEmailPage';
 
 function App() {
   return (
@@ -24,6 +27,15 @@ function App() {
             </Route>
             <Route path="/signout">
               <SignOutPage />
+            </Route>
+            <Route path="/confirm-signup">
+              <ConfirmEmailPage />
+            </Route>
+            <Route path="/profile/edit">
+              <EditProfilePage />
+            </Route>
+            <Route path="/error">
+              <ErrorPage />
             </Route>
             <Route path="/">
               <HomePage />

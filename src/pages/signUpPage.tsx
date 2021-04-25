@@ -44,7 +44,7 @@ export const SignUpPage = () => {
       return;
     }
 
-    history.push("/profile/create");
+    history.push(`/confirm-signup?email=${encodeURIComponent(email)}`);
   };
 
   return (

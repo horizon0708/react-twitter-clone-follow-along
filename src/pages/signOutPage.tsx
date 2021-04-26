@@ -36,7 +36,7 @@ export const SignOutPage = () => {
         </Link>
         <Link
           underline="none"
-          to="/signup"
+          to="/signin"
           component={RouterLink}
           color="inherit"
         >

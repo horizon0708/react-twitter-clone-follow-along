@@ -26,7 +26,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate-types": "npx openapi-typescript https://prfdplzygvxkggwfbzfj.supabase.co/rest/v1/?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNzI0NzM1OSwiZXhwIjoxOTMyODIzMzU5fQ._-NE7JaJ_iTjeg8Q3eT58Itz-fkmSPfWHKBxItDokM0 --output src/api/types.ts"
   },
   "eslintConfig": {
     "extends": [

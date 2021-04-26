@@ -48,7 +48,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSubmitting
               message: "your username must be longer than 2 letters",
             },
           })}
-          error={errors.username || usernameExists}
+          error={!!errors.username || usernameExists}
           helperText={errors?.username?.message || (usernameExists && "The username already exists")}
           label="Username"
           type="text"

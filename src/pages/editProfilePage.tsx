@@ -7,17 +7,26 @@ import { PROFILES_TABLE } from "../constants";
 import { useAuth } from "../contexts/authContext";
 import { useProfile } from "../hooks/useProfile";
 import { PageLoading } from "../components/pageLoading";
+import { UploadButton } from '../components/uploadButton';
+import { useUpload } from '../hooks/useUpload';
+import { definitions } from '../api/types';
+import { UserAvartar } from '../components/userAvatar';
 
 export type CreateProfilePageProps = {};
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     margin: "4em 0 0 0",
-    padding: "6em 0 10em 0",
+    padding: "6em 0 6em 0",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
+  avatar: {
+    margin: "1.5em 0 1em 0",
+    width: "8em",
+    height: "8em"
+  }
 }));
 
 const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
@@ -25,8 +34,9 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
   const { session } = useAuth();
   const [saved, setSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profile, profileError, profileLoading] = useProfile(session?.user.id);
+  const [profile, profileError, profileLoading] = useProfile("id", session?.user.id);
   const [usernameExists, setUsernameExists] = useState(false)
+  const [onUpload, uploadedAvatarUrl, uploadError, isUploading] = useUpload(session)
 
   if (!session) {
     return <Redirect to={"/signin"} />;
@@ -43,10 +53,11 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
     setUsernameExists(false)
     setSaved(false);
     setIsSubmitting(true);
-    const { error } = await supabaseClient.from(PROFILES_TABLE).upsert({
+    const { error } = await supabaseClient.from<definitions["profiles"]>(PROFILES_TABLE).upsert({
       id: session?.user.id,
       username,
       website,
+      avatar_url: uploadedAvatarUrl ?? undefined
     });
 
     if (!error) {
@@ -64,13 +75,16 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
       <Typography variant="h5" align="center">
         {profile ? "Edit Your Profile" : "Create Your Profile"}
       </Typography>
+      <UserAvartar name={profile?.username || session.user.email} path={uploadedAvatarUrl || profile?.avatar_url} className={classes.avatar} />
+      <UploadButton onUpload={onUpload} />
       <ProfileForm
         onSubmit={onSubmit}
         isSubmitting={isSubmitting}
         usernameExists={usernameExists}
         username={profile?.username}
         website={profile?.website}
-      />
+      >
+      </ProfileForm>
       {saved && <Typography>Saved!</Typography>}
     </Paper>
   );

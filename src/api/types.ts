@@ -12,6 +12,102 @@ export interface paths {
       };
     };
   };
+  "/favorites": {
+    get: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.favorites.id"];
+          inserted_at?: parameters["rowFilter.favorites.inserted_at"];
+          tweet_id?: parameters["rowFilter.favorites.tweet_id"];
+          user_id?: parameters["rowFilter.favorites.user_id"];
+          /** Filtering Columns */
+          select?: parameters["select"];
+          /** Ordering */
+          order?: parameters["order"];
+          /** Limiting and Pagination */
+          offset?: parameters["offset"];
+          /** Limiting and Pagination */
+          limit?: parameters["limit"];
+        };
+        header: {
+          /** Limiting and Pagination */
+          Range?: parameters["range"];
+          /** Limiting and Pagination */
+          "Range-Unit"?: parameters["rangeUnit"];
+          /** Preference */
+          Prefer?: parameters["preferCount"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: {
+          schema: definitions["favorites"][];
+        };
+        /** Partial Content */
+        206: unknown;
+      };
+    };
+    post: {
+      parameters: {
+        body: {
+          /** favorites */
+          favorites?: definitions["favorites"];
+        };
+        query: {
+          /** Filtering Columns */
+          select?: parameters["select"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** Created */
+        201: unknown;
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.favorites.id"];
+          inserted_at?: parameters["rowFilter.favorites.inserted_at"];
+          tweet_id?: parameters["rowFilter.favorites.tweet_id"];
+          user_id?: parameters["rowFilter.favorites.user_id"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          id?: parameters["rowFilter.favorites.id"];
+          inserted_at?: parameters["rowFilter.favorites.inserted_at"];
+          tweet_id?: parameters["rowFilter.favorites.tweet_id"];
+          user_id?: parameters["rowFilter.favorites.user_id"];
+        };
+        body: {
+          /** favorites */
+          favorites?: definitions["favorites"];
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferReturn"];
+        };
+      };
+      responses: {
+        /** No Content */
+        204: never;
+      };
+    };
+  };
   "/profiles": {
     get: {
       parameters: {
@@ -118,6 +214,7 @@ export interface paths {
           id?: parameters["rowFilter.tweets.id"];
           createdAt?: parameters["rowFilter.tweets.createdAt"];
           content?: parameters["rowFilter.tweets.content"];
+          userId?: parameters["rowFilter.tweets.userId"];
           /** Filtering Columns */
           select?: parameters["select"];
           /** Ordering */
@@ -171,6 +268,7 @@ export interface paths {
           id?: parameters["rowFilter.tweets.id"];
           createdAt?: parameters["rowFilter.tweets.createdAt"];
           content?: parameters["rowFilter.tweets.content"];
+          userId?: parameters["rowFilter.tweets.userId"];
         };
         header: {
           /** Preference */
@@ -188,6 +286,7 @@ export interface paths {
           id?: parameters["rowFilter.tweets.id"];
           createdAt?: parameters["rowFilter.tweets.createdAt"];
           content?: parameters["rowFilter.tweets.content"];
+          userId?: parameters["rowFilter.tweets.userId"];
         };
         body: {
           /** tweets */
@@ -204,9 +303,44 @@ export interface paths {
       };
     };
   };
+  "/rpc/get_users_who_favorited": {
+    post: {
+      parameters: {
+        body: {
+          args: { [key: string]: any };
+        };
+        header: {
+          /** Preference */
+          Prefer?: parameters["preferParams"];
+        };
+      };
+      responses: {
+        /** OK */
+        200: unknown;
+      };
+    };
+  };
 }
 
 export interface definitions {
+  favorites: {
+    /**
+     * Note:
+     * This is a Primary Key.<pk/>
+     */
+    id: number;
+    inserted_at: string;
+    /**
+     * Note:
+     * This is a Foreign Key to `tweets.id`.<fk table='tweets' column='id'/>
+     */
+    tweet_id: number;
+    /**
+     * Note:
+     * This is a Foreign Key to `users.id`.<fk table='users' column='id'/>
+     */
+    user_id: string;
+  };
   profiles: {
     /**
      * Note:
@@ -228,6 +362,11 @@ export interface definitions {
     id: number;
     createdAt?: string;
     content: string;
+    /**
+     * Note:
+     * This is a Foreign Key to `profiles.id`.<fk table='profiles' column='id'/>
+     */
+    userId?: string;
   };
 }
 
@@ -252,6 +391,12 @@ export interface parameters {
   offset: string;
   /** Limiting and Pagination */
   limit: string;
+  /** favorites */
+  "body.favorites": definitions["favorites"];
+  "rowFilter.favorites.id": string;
+  "rowFilter.favorites.inserted_at": string;
+  "rowFilter.favorites.tweet_id": string;
+  "rowFilter.favorites.user_id": string;
   /** profiles */
   "body.profiles": definitions["profiles"];
   "rowFilter.profiles.id": string;
@@ -264,6 +409,7 @@ export interface parameters {
   "rowFilter.tweets.id": string;
   "rowFilter.tweets.createdAt": string;
   "rowFilter.tweets.content": string;
+  "rowFilter.tweets.userId": string;
 }
 
 export interface operations {}

@@ -11,10 +11,15 @@ import { AuthProvider } from './contexts/authContext'
 import EditProfilePage from './pages/editProfilePage';
 import { ErrorPage } from './pages/errorPage';
 import { ConfirmEmailPage } from './pages/confirmEmailPage';
+import { ViewProfilePage } from './pages/viewProfilePage';
+import { TweetPage } from './pages/tweetPage'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
+const queryClient = new QueryClient()
 function App() {
   return (
-    <AuthProvider> {/* I've been added! */}
+    <AuthProvider> 
+      <QueryClientProvider client={queryClient}>
       <Router>
         <NavBar />
         <Container maxWidth="sm">
@@ -34,15 +39,19 @@ function App() {
             <Route path="/profile/edit">
               <EditProfilePage />
             </Route>
+            <Route path="/profile">
+              <ViewProfilePage />
+            </Route>
             <Route path="/error">
               <ErrorPage />
             </Route>
             <Route path="/">
-              <HomePage />
+              <TweetPage />
             </Route>
           </Switch>
         </Container>
       </Router>
+      </QueryClientProvider>
     </AuthProvider>
   )
 }

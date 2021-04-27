@@ -36,9 +36,6 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ onSubmit, isSubmitting
   return (
     <form className={`${classes.form} ${className}`} onSubmit={(e) => e.preventDefault()}>
       <div>
-        {children}
-      </div>
-      <div>
         <TextField
           name="username"
           inputRef={register({

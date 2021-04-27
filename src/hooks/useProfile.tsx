@@ -28,10 +28,8 @@ export const useProfile = (id?: string): ProfileResult => {
   };
 
   useEffect(()=> {
-      console.log(id)
     if(id) {
         runPromise(id)
-        console.log(result)
     }
   }, [id])
 

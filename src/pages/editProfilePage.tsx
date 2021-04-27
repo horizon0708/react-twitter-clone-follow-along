@@ -35,7 +35,7 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
   const { session } = useAuth();
   const [saved, setSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profile, profileError, profileLoading] = useProfile(session?.user.id);
+  const [profile, profileError, profileLoading] = useProfile("id", session?.user.id);
   const [usernameExists, setUsernameExists] = useState(false)
   const [onUpload, uploadedAvatarUrl, uploadError, isUploading] = useUpload(session)
   const [avatarUrl, avatarLoading]  = useAvatar(uploadedAvatarUrl ?? profile?.avatar_url)

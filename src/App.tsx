@@ -11,6 +11,7 @@ import { AuthProvider } from './contexts/authContext'
 import EditProfilePage from './pages/editProfilePage';
 import { ErrorPage } from './pages/errorPage';
 import { ConfirmEmailPage } from './pages/confirmEmailPage';
+import { ViewProfilePage } from './pages/viewProfilePage';
 
 function App() {
   return (
@@ -33,6 +34,9 @@ function App() {
             </Route>
             <Route path="/profile/edit">
               <EditProfilePage />
+            </Route>
+            <Route path="/profile">
+              <ViewProfilePage />
             </Route>
             <Route path="/error">
               <ErrorPage />

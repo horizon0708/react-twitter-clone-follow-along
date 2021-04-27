@@ -62,11 +62,13 @@ export const NavBar = ({}) => {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <IconButton color="inherit">
-              <Badge color="secondary">
-                <AccountCircle />
-              </Badge>
-            </IconButton>
+            <Link underline="none" component={RouterLink} to="/profile" color="inherit">
+              <IconButton color="inherit">
+                <Badge color="secondary">
+                  <AccountCircle />
+                </Badge>
+              </IconButton>
+            </Link>
         </Toolbar>
       </AppBar>
     </div>

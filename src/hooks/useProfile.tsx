@@ -6,7 +6,7 @@ import { PROFILES_TABLE } from '../constants';
 type Profile = definitions["profiles"]
 type ProfileResult = [Profile| null, {message: string} | null, boolean]
 
-export const useProfile = (id?: string): ProfileResult => {
+export const useProfile = (query: "id" | "username", id?: string): ProfileResult => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<Profile | null>(null);
   const [error, setError] = useState<{ message: string } | null>(null);
@@ -16,7 +16,7 @@ export const useProfile = (id?: string): ProfileResult => {
     const { data, error } = 
         await supabaseClient.from<Profile>(PROFILES_TABLE)
             .select("*")
-            .eq("id", id)
+            .eq(query, id)
     if(error) {
       setError(error)
     }

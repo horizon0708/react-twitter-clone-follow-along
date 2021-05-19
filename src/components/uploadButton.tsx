@@ -6,18 +6,15 @@ export type UploadButtonProps = {
   onUpload: ChangeEventHandler<HTMLInputElement>;
   isLoading?: boolean;
   className?: string;
-  avatarUrl?: string;
 };
 
 export const UploadButton = ({
   onUpload,
   isLoading,
   className,
-  avatarUrl,
 }: UploadButtonProps) => {
   return (
     <div>
-      {avatarUrl ? <img src={avatarUrl} /> : null}
       <Button
         className={className}
         variant="contained"

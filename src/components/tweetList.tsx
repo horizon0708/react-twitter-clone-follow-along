@@ -32,7 +32,7 @@ export type TweetListProps = {
 export const TweetList: React.FC<TweetListProps>= ({ userIdToFilterBy }) => {
     const classes = useStyles()
     const { session } = useAuth()
-    const { isLoading, isError, data, error } = useQuery(['tweets', session?.user.id, userIdToFilterBy], fetchTweets)
+    const { isLoading, isError, data, error } = useQuery(['tweets', session?.user?.id, userIdToFilterBy], fetchTweets)
 
     if(isLoading) {
         return <div className={classes.container}>
@@ -54,7 +54,7 @@ export const TweetList: React.FC<TweetListProps>= ({ userIdToFilterBy }) => {
         <>
             {data.map(tweet => {
                 return (
-                    <TweetCard key={tweet.id} tweet={tweet} userId={session?.user.id} onFavoriteToggle={onFavoriteToggle}/>
+                    <TweetCard key={tweet.id} tweet={tweet} userId={session?.user?.id} onFavoriteToggle={onFavoriteToggle}/>
                 )
             })}
         </>

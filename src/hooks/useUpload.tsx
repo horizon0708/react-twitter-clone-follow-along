@@ -28,11 +28,11 @@ export const useUpload = (session: AuthSession | null): UseUploadResult => {
 
     const file = event.target.files[0];
     const fileExt = file.name.split(".").pop();
-    const filePath = `${session?.user.id}${Math.random()}.${fileExt}`;
+    const filePath = `${session?.user?.id}${Math.random()}.${fileExt}`;
 
     let { data, error } = await supabaseClient.storage
       .from(AVATAR_BUCKET)
-      .upload(filePath, file, { cacheControl: "3600" });
+      .upload(filePath, file);
 
     if (error) {
         setError(error)

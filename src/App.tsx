@@ -58,7 +58,7 @@ function App() {
 
 const HomePage = () => {
   const session = supabaseClient.auth.session()
-  return <div>{session && `you are logged in as ${session.user.email}`}</div>
+  return <div>{session && `you are logged in as ${session.user?.email}`}</div>
 }
 
 export default App

@@ -31,7 +31,7 @@ export const ViewProfilePage: React.FC<{}> = ({}) => {
         "userId"
     )
 
-    const [profile, profileError, profileLoading] = useProfile("id", userIdQuery || session?.user.id)
+    const [profile, profileError, profileLoading] = useProfile("id", userIdQuery || session?.user?.id)
 
     if(!session && !userIdQuery) {
         return <Redirect to="/signin" />

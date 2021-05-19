@@ -18,3 +18,21 @@ export const fetchAvatar: QueryFunction<string | undefined> = async ({ queryKey 
 
     return URL.createObjectURL(data)
 }
+
+export const fetchAvatarPresignedUrl: QueryFunction<string | undefined> = async({ queryKey }) => {
+    const [_key, path] = queryKey
+    const { data, error } = await supabaseClient.storage
+        .from(AVATAR_BUCKET)
+        .createSignedUrl(path as string, 3600)
+    
+    if(error) {
+        throw new Error(error.message)
+    }
+
+    if(!data) {
+        return undefined
+    }
+    console.log(data)
+
+    return data.signedURL 
+}

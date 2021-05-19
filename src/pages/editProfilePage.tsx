@@ -34,7 +34,7 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
   const { session } = useAuth();
   const [saved, setSaved] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [profile, profileError, profileLoading] = useProfile("id", session?.user.id);
+  const [profile, profileError, profileLoading] = useProfile("id", session?.user?.id);
   const [usernameExists, setUsernameExists] = useState(false)
   const [onUpload, uploadedAvatarUrl, uploadError, isUploading] = useUpload(session)
 
@@ -54,7 +54,7 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
     setSaved(false);
     setIsSubmitting(true);
     const { error } = await supabaseClient.from<definitions["profiles"]>(PROFILES_TABLE).upsert({
-      id: session?.user.id,
+      id: session?.user?.id,
       username,
       website,
       avatar_url: uploadedAvatarUrl ?? undefined
@@ -75,7 +75,7 @@ const EditProfilePage: React.FC<CreateProfilePageProps> = ({}) => {
       <Typography variant="h5" align="center">
         {profile ? "Edit Your Profile" : "Create Your Profile"}
       </Typography>
-      <UserAvartar name={profile?.username || session.user.email} path={uploadedAvatarUrl || profile?.avatar_url} className={classes.avatar} />
+      <UserAvartar name={profile?.username || session.user?.email} path={uploadedAvatarUrl || profile?.avatar_url} className={classes.avatar} />
       <UploadButton onUpload={onUpload} />
       <ProfileForm
         onSubmit={onSubmit}

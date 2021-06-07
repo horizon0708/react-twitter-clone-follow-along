@@ -1,19 +1,20 @@
-import { AuthSession } from "@supabase/supabase-js";
+import { AuthSession, User } from "@supabase/supabase-js";
 import React, { useContext, useEffect, useState } from "react";
 import { supabaseClient } from "../api/supabaseClient";
 
 export type AuthContext = {
-    session: AuthSession | null
+    user: User | null
 }
 
-const AuthContext = React.createContext<AuthContext>({ session: null});
+const AuthContext = React.createContext<AuthContext>({ user: null});
 
 export const AuthProvider:React.FC<{}> = ({ children }) => {
-    const [session, setSession] = useState<AuthSession | null>(supabaseClient.auth.session())
+    const [user, setUser] = useState<User | null>(supabaseClient.auth.session()?.user || null)
     useEffect(()=> {
         const cleanup = supabaseClient.auth.onAuthStateChange((_ev, session)=> {
-            console.log("auth session changed", session)
-            setSession(session)
+            if(userHasChanged(user, session)) {
+                setUser(session?.user || null)
+            }
         })
 
         return () => {
@@ -22,9 +23,13 @@ export const AuthProvider:React.FC<{}> = ({ children }) => {
         }
     },[])
 
-    return <AuthContext.Provider value={{session}}>
+    return <AuthContext.Provider value={{ user }}>
         {children}
     </AuthContext.Provider>
+}
+
+const userHasChanged = (currentUser: User | null, session: AuthSession | null) => {
+    return currentUser?.id !== session?.user?.id
 }
 
 export const useAuth = () => {

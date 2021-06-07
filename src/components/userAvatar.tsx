@@ -13,10 +13,10 @@ export type UserAvatarProps = {
 export const UserAvartar:React.FC<UserAvatarProps> = ({ name, path, className }) => {
     const { data } = useQuery(
         ['avatar', path], 
-        fetchAvatar, 
+        fetchAvatar,  
         { 
             enabled: !!path,
-            staleTime: 1000 * 60 * 60, // 1 hour
+            // staleTime: 1000 * 60 * 60, // 1 hour
         }
     )
 

@@ -25,15 +25,15 @@ const useStyles = makeStyles((theme) => ({
 
 export const ViewProfilePage: React.FC<{}> = ({}) => {
     const classes = useStyles()
-    const { session } = useAuth()
+    const { user } = useAuth()
 
     let userIdQuery = new URLSearchParams(window.location.search).get(
         "userId"
     )
 
-    const [profile, profileError, profileLoading] = useProfile("id", userIdQuery || session?.user?.id)
+    const [profile, profileError, profileLoading] = useProfile("id", userIdQuery || user?.id)
 
-    if(!session && !userIdQuery) {
+    if(!user && !userIdQuery) {
         return <Redirect to="/signin" />
     }
 
@@ -61,7 +61,7 @@ export const ViewProfilePage: React.FC<{}> = ({}) => {
     // and they were logged in, redirect them to edit page to set up their profile
     if(!profile) {
         // if the user is logged in, redirect them to set up their profile
-        if(session) {
+        if(user) {
             return <Redirect to="/profile/edit" />
         } else {
             // otherwise to sign in page

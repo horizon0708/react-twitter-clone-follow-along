@@ -1,4 +1,4 @@
-import { AuthSession } from "@supabase/supabase-js";
+import { AuthSession, User } from "@supabase/supabase-js";
 import { ChangeEvent, useState } from "react";
 import { supabaseClient } from "../api/supabaseClient";
 import { AVATAR_BUCKET } from "../constants";
@@ -7,13 +7,13 @@ type UploadCallback = (event: ChangeEvent<HTMLInputElement>) => Promise<void>;
 type Error = { message: string };
 export type UseUploadResult = [UploadCallback, string | null, Error | null, boolean];
 
-export const useUpload = (session: AuthSession | null): UseUploadResult => {
+export const useUpload = (user: User | null): UseUploadResult => {
   const [loading, setLoading] = useState<boolean>(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [error, setError] = useState<{ message: string } | null>(null);
 
   const onUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    if (!session) {
+    if (!user) {
       return;
     }
 
@@ -28,7 +28,7 @@ export const useUpload = (session: AuthSession | null): UseUploadResult => {
 
     const file = event.target.files[0];
     const fileExt = file.name.split(".").pop();
-    const filePath = `${session?.user?.id}${Math.random()}.${fileExt}`;
+    const filePath = `${user?.id}${Math.random()}.${fileExt}`;
 
     let { data, error } = await supabaseClient.storage
       .from(AVATAR_BUCKET)

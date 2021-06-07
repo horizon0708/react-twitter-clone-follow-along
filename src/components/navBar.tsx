@@ -31,7 +31,7 @@ export type NavBarProps = {
 
 export const NavBar = ({}) => {
   const classes = useStyles();
-  const  { session } = useAuth() 
+  const  { user } = useAuth() 
 
   return (
     <div className={classes.root}>
@@ -43,7 +43,7 @@ export const NavBar = ({}) => {
             </Link>
           </Typography>
           {
-              session ? 
+              user ? 
                 <Link underline="none" component={RouterLink} to="/signout" color="inherit">
                     <Button color="inherit">
                         Sign out

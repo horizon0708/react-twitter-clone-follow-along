@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { QueryFunction } from 'react-query';
 import { supabaseClient } from '../api/supabaseClient';
 import { TWEETS_TABLE } from '../constants';
+import { Profile } from '../hooks/useProfile';
 import { definitions } from './types';
 
 type TweetResponse = {
@@ -22,7 +23,14 @@ export type Tweet = {
     content: string
 }
 
-type AddTweetRequestBody = {
+export type RawTweet = {
+    id: number,
+    createdAt: string,
+    userId: string,
+    content: string
+}
+
+export type AddTweetRequestBody = {
     userId: string
     content: string
 }
@@ -30,6 +38,7 @@ type AddTweetRequestBody = {
 export const fetchTweets: QueryFunction<Tweet[], [string, string | undefined, string | undefined]> = async ({ queryKey }) => {
     const [_key, loggedInUserId, userIdToFilterTweetsBy] = queryKey
 
+    console.log("Fetch tweet called", loggedInUserId, userIdToFilterTweetsBy)
     const query =  userIdToFilterTweetsBy ? 
         supabaseClient.rpc<TweetResponse>('get_tweets', { u_id: userIdToFilterTweetsBy }).order("createdat", { ascending: false }) :
         supabaseClient.rpc<TweetResponse>('get_tweets').order("createdat", { ascending: false })
@@ -59,15 +68,27 @@ const fromResponseToTweet = (loggedInUserId?: string, )=>(response: TweetRespons
     }    
 }
 
+export const fromRawTweetToTweet = (rawTweet: RawTweet, user: Profile) => {
+    const { createdAt, content, id } = rawTweet
+    return {
+        id,
+        content,
+        createdAt: dayjs(createdAt).format("DD MMM"),
+        favoritedBy: [],
+        author: user,
+        isFavorited: false,
+        favorites: 0
+    }
+}
+
 export const createTweet = async (tweet: AddTweetRequestBody) => {
     const { data, error } = await supabaseClient
-        .from<Tweet>(TWEETS_TABLE)
+        .from<RawTweet>(TWEETS_TABLE)
         .insert(tweet)
    
     if(error) {
         throw new Error(error.message)
     }
-    console.log(data)
 
     return data || []
 }

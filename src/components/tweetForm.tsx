@@ -1,8 +1,8 @@
 import { Button, Input, makeStyles, Paper, TextField } from '@material-ui/core'
 import React from 'react'
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
-import { createTweet } from '../api/tweets';
+import { useMutation, useQueryClient } from 'react-query';
+import { AddTweetRequestBody, createTweet } from '../api/tweets';
 import { Profile } from '../hooks/useProfile';
 import { UserAvartar } from './userAvatar';
 
@@ -39,17 +39,17 @@ const useStyles = makeStyles((theme) => ({
 
 export type TweetFormProps = {
   profile: Profile
+  submit: (body: AddTweetRequestBody) => void
 }
 
-export const TweetForm: React.FC<TweetFormProps> = ({ profile }) => {
+export const TweetForm: React.FC<TweetFormProps> = ({ profile, submit }) => {
     const classes = useStyles()
     const { username, avatar_url } = profile
     const { register, handleSubmit, errors } = useForm()
-    const mutation = useMutation(createTweet)
 
     const onSubmit = (input: { tweet: string }) => {
       const { tweet } = input
-      mutation.mutate({ userId: profile.id, content: tweet })
+      submit({ userId: profile.id, content: tweet })
     }
 
     return <Paper variant="outlined" className={classes.paper}>

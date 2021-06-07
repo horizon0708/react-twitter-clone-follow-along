@@ -3,7 +3,7 @@ import { definitions } from '../api/types';
 import { supabaseClient } from '../api/supabaseClient';
 import { PROFILES_TABLE } from '../constants';
 
-type Profile = definitions["profiles"]
+export type Profile = definitions["profiles"]
 type ProfileResult = [Profile| null, {message: string} | null, boolean]
 
 export const useProfile = (query: "id" | "username", id?: string): ProfileResult => {

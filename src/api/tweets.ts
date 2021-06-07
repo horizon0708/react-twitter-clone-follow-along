@@ -7,7 +7,7 @@ import { definitions } from './types';
 type TweetResponse = {
     id: number
     content: string
-    createdAt: string,
+    createdat: string,
     favorited_users: { id: string, username: string }[]
     tweet_author: definitions["profiles"] 
 } 
@@ -31,8 +31,8 @@ export const fetchTweets: QueryFunction<Tweet[], [string, string | undefined, st
     const [_key, loggedInUserId, userIdToFilterTweetsBy] = queryKey
 
     const query =  userIdToFilterTweetsBy ? 
-        supabaseClient.rpc<TweetResponse>('get_tweets', { u_id: userIdToFilterTweetsBy }) :
-        supabaseClient.rpc<TweetResponse>('get_tweets')
+        supabaseClient.rpc<TweetResponse>('get_tweets', { u_id: userIdToFilterTweetsBy }).order("createdat", { ascending: false }) :
+        supabaseClient.rpc<TweetResponse>('get_tweets').order("createdat", { ascending: false })
 
     let { data, error } = await query
 
@@ -47,11 +47,11 @@ export const fetchTweets: QueryFunction<Tweet[], [string, string | undefined, st
 }
 
 const fromResponseToTweet = (loggedInUserId?: string, )=>(response: TweetResponse): Tweet => {
-    const { id, content, createdAt, favorited_users, tweet_author } = response;
+    const { id, content, createdat, favorited_users, tweet_author } = response;
     return {
         id,
         content,
-        createdAt: dayjs(createdAt).format(`DD MMM`),
+        createdAt: dayjs(createdat).format(`DD MMM`),
         favoritedBy: favorited_users,
         author: tweet_author,
         isFavorited: favorited_users?.findIndex(u => u.id === loggedInUserId) > -1,
@@ -67,6 +67,7 @@ export const createTweet = async (tweet: AddTweetRequestBody) => {
     if(error) {
         throw new Error(error.message)
     }
+    console.log(data)
 
     return data || []
 }

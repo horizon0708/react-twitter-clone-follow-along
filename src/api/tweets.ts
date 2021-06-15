@@ -35,13 +35,15 @@ export type AddTweetRequestBody = {
     content: string
 }
 
-export const fetchTweets: QueryFunction<Tweet[], [string, string | undefined, string | undefined]> = async ({ queryKey }) => {
-    const [_key, loggedInUserId, userIdToFilterTweetsBy] = queryKey
+export const fetchTweets: QueryFunction<Tweet[], [string, string | undefined, string | undefined, string | undefined]> = async ({ queryKey }) => {
+    const [_key, loggedInUserId, userIdToFilterTweetsBy, fromTimestamp] = queryKey
 
-    console.log("Fetch tweet called", loggedInUserId, userIdToFilterTweetsBy)
-    const query =  userIdToFilterTweetsBy ? 
-        supabaseClient.rpc<TweetResponse>('get_tweets', { u_id: userIdToFilterTweetsBy }).order("createdat", { ascending: false }) :
-        supabaseClient.rpc<TweetResponse>('get_tweets').order("createdat", { ascending: false })
+    const params = { u_id: userIdToFilterTweetsBy || null, t_after: fromTimestamp || null }
+    const query = supabaseClient.rpc<TweetResponse>('get_tweets', params).order("createdat", { ascending: false });
+
+    // const query =  userIdToFilterTweetsBy ? 
+    //     supabaseClient.rpc<TweetResponse>('get_tweets', { u_id: userIdToFilterTweetsBy, t_after: fromTimestamp }).order("createdat", { ascending: false }) :
+    //     supabaseClient.rpc<TweetResponse>('get_tweets').order("createdat", { ascending: false })
 
     let { data, error } = await query
 
@@ -60,7 +62,7 @@ const fromResponseToTweet = (loggedInUserId?: string, )=>(response: TweetRespons
     return {
         id,
         content,
-        createdAt: dayjs(createdat).format(`DD MMM`),
+        createdAt: createdat,
         favoritedBy: favorited_users,
         author: tweet_author,
         isFavorited: favorited_users?.findIndex(u => u.id === loggedInUserId) > -1,

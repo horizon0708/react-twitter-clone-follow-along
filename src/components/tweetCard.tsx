@@ -4,6 +4,7 @@ import { Tweet } from '../api/tweets'
 import { UserAvartar } from './userAvatar'
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import FavoriteBorderOutlinedIcon from '@material-ui/icons/FavoriteBorderOutlined';
+import { toDateAndMonth } from '../util/dates';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -35,7 +36,7 @@ export const TweetCard: React.FC<TweetCardProps> = ({ tweet, onFavoriteToggle, u
           <UserAvartar path={author.avatar_url} name={author.username}/> 
         }
         title={author.username}
-        subheader={createdAt}
+        subheader={toDateAndMonth(createdAt)}
       />
       <CardContent>
         {content}

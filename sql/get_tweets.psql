@@ -1,0 +1,32 @@
+drop function get_tweets(u_id uuid);
+
+create or replace function get_tweets(u_id uuid default null, t_after timestamp with time zone default null)
+   returns table (
+     id integer,
+     content text,
+     createdAt timestamp with time zone,
+     favorited_users json,
+     tweet_author json
+   ) 
+   language plpgsql
+  as
+$$
+declare 
+-- variable declaration
+begin
+  return query
+    select t.id, t.content, t."createdAt", p.favorited_users, p2.tweet_author
+      from tweets t
+      left join (
+        select f.tweet_id as id, json_agg(json_build_object('id', p.id, 'username', p.username)) as favorited_users
+        from favorites f
+        join profiles p on p.id = f.user_id
+        group by f.tweet_id
+      ) p using (id)
+      left join (
+        select p2.id, json_build_object('id', p2.id, 'username', p2.username, 'avatar_url', p2.avatar_url) as tweet_author
+        from profiles p2
+      ) p2 on (p2.id = t."userId")
+      where (u_id is null or u_id = t."userId") and (t_after is null or t_after > t."createdAt");
+end;
+$$

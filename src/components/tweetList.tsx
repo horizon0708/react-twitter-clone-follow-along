@@ -34,7 +34,7 @@ export type TweetListProps = {
 export const TweetList: React.FC<TweetListProps>= ({ userIdToFilterBy }) => {
     const classes = useStyles()
     const { user } = useAuth()
-    const { isLoading, isError, data, error } = useQuery(['tweets', user?.id, userIdToFilterBy], fetchTweets)
+    const { isLoading, isError, data, error } = useQuery(['tweets', user?.id, userIdToFilterBy, undefined], fetchTweets)
     if(isLoading) {
         return <div className={classes.container}>
             <CircularProgress />

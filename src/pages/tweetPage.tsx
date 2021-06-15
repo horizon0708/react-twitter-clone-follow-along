@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import React from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { fetchProfileById } from '../api/profiles'

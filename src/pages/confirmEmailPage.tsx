@@ -4,7 +4,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles(t => ({
-    paper: {
+    container: {
         marginTop: "4em",
         padding: "6em 0 6em 0",
         display: "flex",
@@ -29,7 +29,7 @@ export const ConfirmEmailPage = () => {
     email = decodeURIComponent(email)
 
     return (
-        <Paper variant="outlined" className={classes.paper}>
+        <Paper variant="outlined" className={classes.container}>
             <MailIcon style={{fontSize: 60}}/>            
             <Typography align="center">
                 {`We've sent an email to ${email} to confirm your sign up.`}

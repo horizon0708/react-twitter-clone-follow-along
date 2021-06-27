@@ -1,47 +1,32 @@
-# Getting Started with Create React App
+# Create a Twitter clone with React and Supabase
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the source code repo for an ongoing tutorial series where we are making a twitter clone with React and [Supabase](https://supabase.io/) (an open-source Firebase alternative)
 
-## Available Scripts
+## Tutorial
 
-In the project directory, you can run:
+- [Part 1: Setting up Supabase and the project](https://medium.com/geekculture/a-step-by-step-guide-to-creating-a-twitter-clone-with-react-and-supabase-part-1-d6865ade095a)
+- [Part 2: Routing with React-Router, validation with react-hook-form](https://medium.com/geekculture/a-step-by-step-guide-to-creating-a-twitter-clone-with-react-and-supabase-part-2-43fd11558fc1)
+- [Part 3: Finishing Sign Up flow, generating types](https://medium.com/geekculture/step-by-step-guide-to-creating-a-twitter-clone-with-react-and-supabase-part-3-1c7ece96b77b)
+- [Part 4: Using Storage and querying complex relations ia Postgres functions](https://medium.com/geekculture/create-a-twitter-clone-with-supabase-part-4-using-storage-and-postgres-stored-procedures-7e2342eede3)
+- Part 5: Infinite List and realtime notification (currently being written)
+- Part 6: Final touches and deployment
 
-### `yarn start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Password Auth and User Profile
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Auth flow and Avatar Uploading implemented Supabase Auth and Supabase Storage.
 
-### `yarn test`
+![edit profile](./images/edit-profile.png)
 
+### Infinite scrolling
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Infinite scrolling implemented using [react-query](https://react-query.tanstack.com/).
 
-### `yarn build`
+![infite scrolling](./images/infinite-list.gif)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Real-time notification 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Alerts and notification implmented using [Supabase Realtime](https://supabase.io/docs/realtime/server/about)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+![alert](./images/realtime-notification.png)

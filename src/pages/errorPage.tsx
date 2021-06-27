@@ -3,7 +3,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 import React from 'react'
 
 const useStyles = makeStyles(t => ({
-    paper: {
+    container: {
         marginTop: "4em",
         padding: "6em 0 6em 0",
         display: "flex",
@@ -20,7 +20,7 @@ export const ErrorPage = () => {
     const classes = useStyles()
 
     return (
-        <Paper variant="outlined" className={classes.paper}>
+        <Paper variant="outlined" className={classes.container}>
             <ErrorIcon style={{fontSize: 60}} />            
             <Typography>
                 Oops! Something went wrong. Please try again.

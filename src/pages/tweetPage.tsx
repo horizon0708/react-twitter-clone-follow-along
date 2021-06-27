@@ -1,12 +1,20 @@
-import React from 'react'
-import { useMutation, useQuery, useQueryClient } from 'react-query'
+import React, { useState } from 'react'
+import { InfiniteData, useMutation, useQuery, useQueryClient } from 'react-query'
 import { fetchProfileById } from '../api/profiles'
-import { createTweet, fromRawTweetToTweet, Tweet } from '../api/tweets'
+import { createTweet, fromRawTweetToTweet, fromTweetRequestToTweet, TweetResponse } from '../api/tweets'
 import { TweetForm } from '../components/tweetForm'
 import { TweetList } from '../components/tweetList'
 import { useAuth } from '../contexts/authContext'
+import { makeStyles } from '@material-ui/core'
+
+const useStyles = makeStyles(()=> ({
+    container: {
+        margin: "4em 0 4em 0"
+    }
+}))
 
 export const TweetPage = () => {
+    const classes = useStyles();
     const { user } = useAuth()
     const { isLoading, isError, data, error } = useQuery(['profile', user?.id], async ()=> {
         return await fetchProfileById(user!.id)
@@ -17,23 +25,46 @@ export const TweetPage = () => {
     const queryClient = useQueryClient()
 
     const mutation = useMutation(createTweet, {
-        onSettled: (tweets) => {
-            if(tweets && tweets.length) {
-                queryClient.setQueryData<Tweet[]>(['tweets', user?.id, undefined], old => {
-                    const newTweet = fromRawTweetToTweet(tweets[0], data!) 
-                    if(old) {
-                        return [ newTweet, ...old]
+        onMutate: (tweet) => {
+            if(tweet) {
+                queryClient.setQueryData<InfiniteData<TweetResponse>>(['tweets', user?.id, undefined], old => {
+                    const newTweet = fromTweetRequestToTweet(tweet, data!) 
+                    if(old?.pages && !!old.pages.length) {
+                        const [head, ...rest] = old.pages
+                        const pages = [
+                            {
+                                ...head,
+                                tweets: [
+                                    newTweet,
+                                    ...head.tweets
+                                ],
+                            },
+                            ...rest
+                        ] 
+                        return {
+                            pages,
+                            pageParams: old.pageParams,
+                        }
                     }
-                    return [ newTweet]
+                    const pages = [ {
+                        tweets: [ newTweet ],
+                        next: newTweet.createdAt,
+                        previous: newTweet.createdAt,
+                        hasBeenAddedByMutate: true
+                    } ]
+                    return {
+                        pages,
+                        pageParams: old?.pageParams || []
+                    }
                 })
             }
         }
       })
 
     return (
-        <>
+        <div className={classes.container}>
             { data ? <TweetForm profile={data} submit={mutation.mutate} />: null }
             <TweetList />
-        </>
+        </div>
     )
 }

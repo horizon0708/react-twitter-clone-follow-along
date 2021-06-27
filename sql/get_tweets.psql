@@ -1,6 +1,9 @@
-drop function get_tweets(u_id uuid);
+drop function get_tweets(u_id uuid, t_after timestamp with time zone);
 
-create or replace function get_tweets(u_id uuid default null, t_after timestamp with time zone default null)
+create or replace function get_tweets(
+  u_id uuid default null, 
+  t_to timestamp with time zone default null,
+  t_from timestamp with time zone default null) 
    returns table (
      id integer,
      content text,
@@ -27,6 +30,9 @@ begin
         select p2.id, json_build_object('id', p2.id, 'username', p2.username, 'avatar_url', p2.avatar_url) as tweet_author
         from profiles p2
       ) p2 on (p2.id = t."userId")
-      where (u_id is null or u_id = t."userId") and (t_after is null or t_after > t."createdAt");
+      where 
+        (u_id is null or u_id = t."userId") 
+        and (t_to is null or t_to > t."createdAt")
+        and (t_from is null or t_from < t."createdAt");
 end;
 $$

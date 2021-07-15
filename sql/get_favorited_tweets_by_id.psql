@@ -1,0 +1,29 @@
+drop function get_favorited_tweets_by_id(f_ids bigint[]);
+
+create or replace function get_favorited_tweets_by_id(
+  f_ids bigint[]) 
+   returns table (
+     id bigint,
+     insertedAt timestamp with time zone,
+     favorited_tweet json,
+     favorited_user json
+   ) 
+   language plpgsql
+  as
+$$
+declare 
+-- variable declaration
+begin
+  return query select f.id, f.inserted_at, fav_tweet, favorited_by
+      from favorites f
+      left join (
+        select t1.id, json_build_object('id', t1.id, 'content', t1.content) as fav_tweet
+        from tweets t1
+      ) t1 on (t1.id = f.tweet_id)
+      left join (
+        select p2.id, json_build_object('id', p2.id, 'username', p2.username, 'avatar_url', p2.avatar_url) as favorited_by
+        from profiles p2
+      ) p2 on (p2.id = f.user_id)
+      where f.id = any(f_ids);
+end;
+$$

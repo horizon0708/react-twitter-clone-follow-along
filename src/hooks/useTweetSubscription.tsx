@@ -1,8 +1,5 @@
-import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
-import { useQuery, useQueryClient } from 'react-query'
 import { supabaseClient } from '../api/supabaseClient'
-import { Tweet } from '../api/tweets'
 import { TWEETS_TABLE } from '../constants'
 import { useAuth } from '../contexts/authContext'
 
@@ -15,7 +12,6 @@ export const useTweetSubscription = () => {
         const { unsubscribe } = supabaseClient
             .from(TWEETS_TABLE)
             .on("INSERT", payload => {
-
                 // Users' new tweets are optimistically updated
                 // So no need to alert users to their own new tweets
                 if(payload.new.userId !== user?.id) {

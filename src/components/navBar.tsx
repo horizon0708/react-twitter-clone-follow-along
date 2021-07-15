@@ -11,6 +11,8 @@ import { AccountCircle } from '@material-ui/icons';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@material-ui/core/Link';
 import { useAuth } from '../contexts/authContext';
+import { useFavoriteSubscription } from '../hooks/useFavoritesSubscription';
+import { NotificationBell } from './notificationBell';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,7 +37,7 @@ export const NavBar = ({}) => {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="static" elevation={0}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
                 <Link underline="none" component={RouterLink} to="/" color="inherit">
@@ -58,9 +60,7 @@ export const NavBar = ({}) => {
               
           }
             <IconButton color="inherit">
-              <Badge color="secondary">
-                <NotificationsIcon />
-              </Badge>
+              <NotificationBell />
             </IconButton>
             <Link underline="none" component={RouterLink} to="/profile" color="inherit">
               <IconButton color="inherit">

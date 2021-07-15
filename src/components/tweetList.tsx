@@ -5,6 +5,7 @@ import {
   useInfiniteQuery,
   useQueryClient,
 } from 'react-query'
+import { toggleFavorite } from '../api/favorites'
 import { fetchTweets, TweetResponse } from '../api/tweets'
 import { useAuth } from '../contexts/authContext'
 import { useTweetSubscription } from '../hooks/useTweetSubscription'
@@ -51,10 +52,10 @@ export const TweetList: React.FC<TweetListProps> = ({ userIdToFilterBy }) => {
     hasPreviousPage,
   } = useInfiniteQuery(['tweets', user?.id, userIdToFilterBy], fetchTweets, {
     getNextPageParam: (lastPage, pages) => {
-      return lastPage.next ? { from: lastPage.next } : null
+      return lastPage?.next ? { from: lastPage.next } : null
     },
     getPreviousPageParam: (lastPage, pages) => {
-      return lastPage.previous ? { to: lastPage.previous } : null
+      return lastPage?.previous ? { to: lastPage.previous } : null
     },
     select: (data) => {
       return {
@@ -98,7 +99,50 @@ export const TweetList: React.FC<TweetListProps> = ({ userIdToFilterBy }) => {
     return <Card className={classes.container}></Card>
   }
 
-  const onFavoriteToggle = (tweetId: number, userId?: string) => {}
+  const onFavoriteToggle = (tweetId: number, userId?: string) => {
+    if(userId) {
+      toggleFavorite(userId, tweetId)
+
+      //optimistically updating after toggling
+      queryClient.setQueryData<InfiniteData<TweetResponse>>(
+        ['tweets', user?.id, userIdToFilterBy],
+        (data) => {
+          if(!data) {
+            return {
+              pages: [],
+              pageParams: []
+            }
+          }
+
+          // Lenses or Immer would be nice here
+          return {
+            ...data,
+            pages: data.pages.map(page => {
+              return {
+                ...page,
+                tweets: page.tweets.map(tweet => {
+                  if(tweet.id !== tweetId) {
+                    return {
+                      ...tweet
+                    }
+                  }
+
+                  return {
+                    ...tweet,
+                    isFavorited: !tweet.isFavorited, 
+                    // hindsight, I should have limited Tweet's API to favoritedBy
+                    // and derived favorites and isFavorited from that - that would have made this much
+                    // easier and cleaner
+                    favorites: tweet.isFavorited ? tweet.favorites - 1 : tweet.favorites + 1
+                  }
+                })
+              }
+            })
+          }
+        }
+      )
+    }
+  }
 
   return (
     <>
@@ -111,6 +155,7 @@ export const TweetList: React.FC<TweetListProps> = ({ userIdToFilterBy }) => {
                 <TweetCard
                   key={tweet.id}
                   tweet={tweet}
+                  f={tweet.isFavorited}
                   userId={user?.id}
                   onFavoriteToggle={onFavoriteToggle}
                 />

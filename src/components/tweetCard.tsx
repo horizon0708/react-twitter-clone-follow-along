@@ -21,14 +21,14 @@ const useStyles = makeStyles((theme) => ({
 
 export type TweetCardProps = {
   tweet: Tweet,
+  f?: boolean
   onFavoriteToggle: (tweetId: number, userId?: string) => void
   userId?: string
 }
 
-export const TweetCard: React.FC<TweetCardProps> = ({ tweet, onFavoriteToggle, userId }) => {
+export const TweetCard: React.FC<TweetCardProps> = ({ tweet, f, onFavoriteToggle, userId }) => {
   const classes = useStyles()
   const { id, author, favoritedBy, favorites, isFavorited,content, createdAt } = tweet;
-
   return (
     <Card variant="outlined" className={classes.paper}>
       <CardHeader

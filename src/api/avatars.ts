@@ -32,7 +32,6 @@ export const fetchAvatarPresignedUrl: QueryFunction<string | undefined> = async(
     if(!data) {
         return undefined
     }
-    console.log(data)
 
     return data.signedURL 
 }

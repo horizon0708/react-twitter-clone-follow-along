@@ -23,12 +23,7 @@ export const useFavoriteSubscription = () => {
             .from(FAVORITES_TABLE)
             .on("INSERT", payload => {
                 if(payload.new.user_id !== user?.id) {
-                    console.log("got new notification")
-                    console.log(payload.new.id)
-                    console.log(newFavorites)
                     setNewFavorites([...newFavorites, payload.new.id])
-                    console.log("---")
-                    console.log(newFavorites)
                 }
             })
             .subscribe()

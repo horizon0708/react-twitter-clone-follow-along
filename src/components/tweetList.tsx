@@ -8,6 +8,8 @@ import {
 import { toggleFavorite } from '../api/favorites'
 import { fetchTweets, TweetResponse } from '../api/tweets'
 import { useAuth } from '../contexts/authContext'
+import { useToggleFavorite } from '../hooks/useToggleFavorite'
+import { useTweetInfiniteQuery } from '../hooks/useTweetInfiniteQuery'
 import { useTweetSubscription } from '../hooks/useTweetSubscription'
 import { FetchOlderTweetsButton } from './fetchOlderTweetsButton'
 import { NewTweetAlert } from './newTweetAlert'
@@ -40,52 +42,18 @@ export type TweetListProps = {
 export const TweetList: React.FC<TweetListProps> = ({ userIdToFilterBy }) => {
   const classes = useStyles()
   const { user } = useAuth()
-  const { newTweetAvailable, setNewTweetAvailable } = useTweetSubscription()
+  const onFavoriteToggle = useToggleFavorite(userIdToFilterBy)
   const {
+    data,
     isLoading,
     isError,
-    data,
-    fetchPreviousPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    isFetchingPreviousPage,
-    hasPreviousPage,
-  } = useInfiniteQuery(['tweets', user?.id, userIdToFilterBy], fetchTweets, {
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage?.next ? { from: lastPage.next } : null
-    },
-    getPreviousPageParam: (lastPage, pages) => {
-      return lastPage?.previous ? { to: lastPage.previous } : null
-    },
-    select: (data) => {
-      return {
-        pages: [...data.pages].reverse(),
-        pageParams: [...data.pageParams].reverse(),
-      }
-    },
-    staleTime: 1000 * 60 * 5, // 5min
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  })
-  const queryClient = useQueryClient()
-
-  const fetchNext = () => {
-    fetchNextPage().then(() => {
-      //get rid of duplicate tweets that got added by optimistic updates
-      queryClient.setQueryData<InfiniteData<TweetResponse>>(
-        ['tweets', user?.id, userIdToFilterBy],
-        (data) => ({
-          pages:
-            data?.pages.map((x) => ({
-              ...x,
-              tweets: x.tweets.filter((x) => !x.hasBeenAddedByMutate),
-            })) || [],
-          pageParams: data?.pageParams || [],
-        }),
-      )
-    })
-    setNewTweetAvailable(false)
-  }
+    hasNewerTweets,
+    hasOlderTweets,
+    isFetchingNewTweets,
+    isFetchingOlderTweets,
+    fetchNewerTweets,
+    fetchOlderTweets
+  } = useTweetInfiniteQuery(userIdToFilterBy)
 
   if (isLoading) {
     return (
@@ -99,54 +67,12 @@ export const TweetList: React.FC<TweetListProps> = ({ userIdToFilterBy }) => {
     return <Card className={classes.container}></Card>
   }
 
-  const onFavoriteToggle = (tweetId: number, userId?: string) => {
-    if(userId) {
-      toggleFavorite(userId, tweetId)
-
-      //optimistically updating after toggling
-      queryClient.setQueryData<InfiniteData<TweetResponse>>(
-        ['tweets', user?.id, userIdToFilterBy],
-        (data) => {
-          if(!data) {
-            return {
-              pages: [],
-              pageParams: []
-            }
-          }
-
-          // Lenses or Immer would be nice here
-          return {
-            ...data,
-            pages: data.pages.map(page => {
-              return {
-                ...page,
-                tweets: page.tweets.map(tweet => {
-                  if(tweet.id !== tweetId) {
-                    return {
-                      ...tweet
-                    }
-                  }
-
-                  return {
-                    ...tweet,
-                    isFavorited: !tweet.isFavorited, 
-                    // hindsight, I should have limited Tweet's API to favoritedBy
-                    // and derived favorites and isFavorited from that - that would have made this much
-                    // easier and cleaner
-                    favorites: tweet.isFavorited ? tweet.favorites - 1 : tweet.favorites + 1
-                  }
-                })
-              }
-            })
-          }
-        }
-      )
-    }
-  }
-
   return (
     <>
-      <NewTweetAlert newTweetAvailable={newTweetAvailable} fetchNewTweets={()=> fetchNext()} />
+      <NewTweetAlert newTweetAvailable={hasNewerTweets} fetchNewTweets={fetchNewerTweets} />
+      {isFetchingNewTweets && <div className={classes.container}>
+        <CircularProgress />
+      </div>}
       {data.pages.map((group, i) => {
         return (
           <React.Fragment key={i}>
@@ -165,9 +91,9 @@ export const TweetList: React.FC<TweetListProps> = ({ userIdToFilterBy }) => {
         )
       })}
       <FetchOlderTweetsButton 
-        hasPreviousPage={hasPreviousPage} 
-        fetchOlderTweets={()=> fetchPreviousPage()} 
-        isLoading={isFetchingPreviousPage}
+        hasPreviousPage={hasOlderTweets} 
+        fetchOlderTweets={fetchOlderTweets} 
+        isLoading={isFetchingOlderTweets}
         />
     </>
   )

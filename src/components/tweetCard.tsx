@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export type TweetCardProps = {
   tweet: Tweet,
   f?: boolean
-  onFavoriteToggle: (tweetId: number, userId?: string) => void
+  onFavoriteToggle: (tweetId: number) => void
   userId?: string
 }
 
@@ -42,7 +42,7 @@ export const TweetCard: React.FC<TweetCardProps> = ({ tweet, f, onFavoriteToggle
         {content}
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="toggle favorite for this tweet" onClick={()=> onFavoriteToggle(id, userId)}>
+        <IconButton aria-label="toggle favorite for this tweet" onClick={()=> onFavoriteToggle(id)}>
           {
             isFavorited ? 
               <FavoriteIcon /> :
